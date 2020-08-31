@@ -1,38 +1,40 @@
 import React from 'react';
 import logo from "./assets/images/logo.svg";
-import styled from 'styled-components';
-import Filter from './Filter';
-import Sort from './Sort';
-import Flight from './Flight';
+import Sort from './components/Sort/Sort';
+import Ticket from './components/Ticket/Ticket';
+import store from './store/store';
+import { observer } from 'mobx-react';
 
-const Container = styled.div`
-  width: 755px;
-  margin: 0 auto;
-  display: flex;
-`
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-const Logo = styled.img`
-  display: flex;
-  margin: 50px auto;
-`
-function App() {
-  return (
-    <>
-      <Logo src={logo} alt="logo" />
-      <Container>
-        <Filter />
-        <Wrapper>
-          <Sort />
-          <Flight />
-          <Flight />
-          <Flight />
-        </Wrapper>
-      </Container>
-    </>
-  );
+import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
+
+@observer 
+class App extends React.Component {
+  componentDidMount() {
+    store.setTickets()
+  }
+  render() {
+    if(store.error) {
+      return (
+        <Error>An error has occurred. Refresh the page.</Error>
+      )
+    }
+    return (
+      <>
+        <Logo src={logo} alt="logo" />
+        <Container>
+          <Wrapper>
+            <Sort />
+            {store.isFetching ? <Preloader/> : store.setTicket.map((ticket: Ticket, index: number) => (
+              <Ticket
+                key={index}
+                ticket={ticket}
+              />
+            ))}
+          </Wrapper>
+        </Container>
+      </>
+    )
+  }
 }
 
 export default App;

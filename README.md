@@ -7,12 +7,14 @@
 ## Stack of technologies
 
 - React
+- MobX
 - Styled-Components
 - TypeScript
 
 ## Installation
 
 ```bash
+cd aviasales
 npm i
 npm start
 ```
