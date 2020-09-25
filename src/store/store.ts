@@ -59,6 +59,27 @@ class Store {
                 break;
         }
     }
+
+    @action
+    filter = (tickets: any, eventValue: string) => {
+        switch(eventValue) {
+            case '0':
+                this.ticketsData = tickets.filter((ticket: any) => ticket.price);
+                break;
+            case '1':
+                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 0 || ticket.stopsTo.length === 0);
+                break;
+            case '2':
+                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 1 || ticket.stopsTo.length === 1);
+                break;
+            case '3':
+                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 2 || ticket.stopsTo.length === 2);
+                break;
+            case '4':
+                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 3 || ticket.stopsTo.length === 3);
+                break;
+        }
+    }
 }
 
 export default new Store();

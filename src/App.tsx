@@ -6,6 +6,7 @@ import store from './store/store';
 import { observer } from 'mobx-react';
 
 import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
+import Filter from './components/Filter/Filter';
 
 @observer 
 class App extends React.Component {
@@ -22,6 +23,7 @@ class App extends React.Component {
       <>
         <Logo src={logo} alt="logo" />
         <Container>
+          <Filter />
           <Wrapper>
             <Sort />
             {store.isFetching ? <Preloader/> : store.setTicket.map((ticket: Ticket, index: number) => (
