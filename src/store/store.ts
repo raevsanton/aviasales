@@ -9,9 +9,11 @@ class Store {
     @action
     setTickets = async () => {
         try {
-            const response = await fetch('./tickets.json');
-            let tickets = await response.json();
-            this.ticketsData = tickets[0].tickets
+            const responseId = await fetch('https://front-test.beta.aviasales.ru/search');
+            const dataId = await responseId.json();
+            const responseTickets = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${dataId.searchId}`);
+            const dataTickets = await responseTickets.json();
+            this.ticketsData = dataTickets.tickets
                 .slice(0, 5)
                 .map((ticket: Ticket) => {
                     const object: TicketDestruct = {
