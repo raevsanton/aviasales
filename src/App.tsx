@@ -4,7 +4,6 @@ import Sort from './components/Sort/Sort';
 import Ticket from './components/Ticket/Ticket';
 import store from './store/store';
 import { observer } from 'mobx-react';
-
 import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
 import Filter from './components/Filter/Filter';
 
