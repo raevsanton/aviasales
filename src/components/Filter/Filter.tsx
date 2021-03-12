@@ -1,9 +1,9 @@
 import React from "react";
 import {FilterH2, FilterItem, FilterStyle, Input, Label, Span} from "./styles";
-import { observer } from "mobx-react";
-import store from "../../store/store";
+// import { observer } from "mobx-react";
+import store from "../../store/tickets";
 
-@observer
+// @observer
 export default class Filter extends React.Component<any> {
     state = {
         stops: [
@@ -44,7 +44,7 @@ export default class Filter extends React.Component<any> {
                                         checked={stop.isChecked}
                                         onChange={this.handleInputChange}
                                         onClick={() => {
-                                            store.filter(store.ticketsData, stop.value)
+                                            // store.filter(store.ticketsData, stop.value)
                                         }}
                                     />
                                     <Span/>

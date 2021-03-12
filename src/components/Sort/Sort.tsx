@@ -1,20 +1,20 @@
 import React  from "react";
-import { observer } from "mobx-react";
-import store from "../../store/store";
+// import { observer } from "mobx-react";
+import store from "../../store/tickets";
 import {
     SortButtonOne,
     SortButtonsWrapper,
     SortButtonTwo
 } from "./styles";
 
-@observer
+// @observer
 export default class Sort extends React.Component {
     state = {
         sort: false
     };
     sortHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
         this.setState({ sort: !this.state.sort })
-        store.sortTickets(event.currentTarget.value)
+        // store.sortTickets(event.currentTarget.value)
     }
     render() {
         const { sort } = this.state;

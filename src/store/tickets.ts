@@ -1,7 +1,10 @@
 import {observable, toJS, action, computed} from 'mobx';
 import {Ticket, TicketDestruct} from "../types";
 
-class Store {
+export default class Tickets {
+    constructor() {
+
+    }
     @observable ticketsData: Array<any> = [];
     @observable error: boolean = false;
     @observable isFetching: boolean = true;
@@ -84,5 +87,3 @@ class Store {
         }
     }
 }
-
-export default new Store();
