@@ -1,10 +1,9 @@
 import React from "react";
-import {FilterH2, FilterItem, FilterStyle, Input, Label, Span} from "./styles";
-// import { observer } from "mobx-react";
+import { FilterH2, FilterItem, FilterStyle, Input, Label, Span } from "./styles";
+import { observer } from "mobx-react-lite";
 import store from "../../store/tickets";
 
-// @observer
-export default class Filter extends React.Component<any> {
+const Filter = observer(() => {
     state = {
         stops: [
             {value: '0', isChecked: true, stops: 'All'},

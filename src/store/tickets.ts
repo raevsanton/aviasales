@@ -1,15 +1,15 @@
-import {observable, toJS, action, computed} from 'mobx';
-import {Ticket, TicketDestruct} from "../types";
+import { makeAutoObservable } from "mobx"
+import { Ticket, TicketDestruct } from "../types";
 
 export default class Tickets {
+    ticketsData: Array<any> = []
+    error: boolean = false;
+    isFetching: boolean = true;
+
     constructor() {
-
+        makeAutoObservable(this)
     }
-    @observable ticketsData: Array<any> = [];
-    @observable error: boolean = false;
-    @observable isFetching: boolean = true;
 
-    @action
     setTickets = async () => {
         try {
             const responseId = await fetch('https://front-test.beta.aviasales.ru/search');
@@ -42,12 +42,10 @@ export default class Tickets {
         }
     }
 
-    @computed
     get setTicket() {
-        return toJS(this.ticketsData);
+        return this.ticketsData;
     }
 
-    @action
     sortTickets = (event: string) => {
         switch(event) {
             case '0':
@@ -66,7 +64,6 @@ export default class Tickets {
         }
     }
 
-    @action
     filter = (tickets: any, eventValue: string) => {
         switch(eventValue) {
             case '0':
