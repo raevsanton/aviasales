@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx"
 import { Ticket, TicketDestruct } from "../types";
 
 export default class Tickets {
-    ticketsData: Array<any> = []
+    ticketsData: Array<TicketDestruct> = [];
     error: boolean = false;
     isFetching: boolean = true;
 
@@ -10,7 +10,7 @@ export default class Tickets {
         makeAutoObservable(this)
     }
 
-    setTickets = async () => {
+    setTickets = async() => {
         try {
             const responseId = await fetch('https://front-test.beta.aviasales.ru/search');
             const dataId = await responseId.json();
@@ -42,44 +42,15 @@ export default class Tickets {
         }
     }
 
-    get setTicket() {
-        return this.ticketsData;
-    }
-
     sortTickets = (event: string) => {
         switch(event) {
             case '0':
-                let ticketsMostCheap = this.ticketsData
-                    .slice()
-                    .sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) => ticketOne.price - ticketTwo.price);
-                this.ticketsData = ticketsMostCheap;
+                this.ticketsData = this.ticketsData.sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) =>
+                    ticketOne.price - ticketTwo.price);
                 break;
             case '1':
-                let ticketsMostQuick = this.ticketsData
-                    .slice()
-                    .sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) => 
+                this.ticketsData = this.ticketsData.sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) =>
                     (ticketOne.durationFrom + ticketOne.durationTo) - (ticketTwo.durationFrom + ticketTwo.durationTo));
-                this.ticketsData = ticketsMostQuick;
-                break;
-        }
-    }
-
-    filter = (tickets: any, eventValue: string) => {
-        switch(eventValue) {
-            case '0':
-                this.ticketsData = tickets.filter((ticket: any) => ticket.price);
-                break;
-            case '1':
-                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 0 || ticket.stopsTo.length === 0);
-                break;
-            case '2':
-                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 1 || ticket.stopsTo.length === 1);
-                break;
-            case '3':
-                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 2 || ticket.stopsTo.length === 2);
-                break;
-            case '4':
-                this.ticketsData = tickets.filter((ticket: any) => ticket.stopsFrom.length === 3 || ticket.stopsTo.length === 3);
                 break;
         }
     }

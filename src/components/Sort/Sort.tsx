@@ -1,38 +1,36 @@
-import React  from "react";
-// import { observer } from "mobx-react";
-import store from "../../store/tickets";
+import React from "react";
+import { observer } from "mobx-react-lite";
 import {
     SortButtonOne,
     SortButtonsWrapper,
     SortButtonTwo
 } from "./styles";
+import {useStore} from "../../store";
 
-// @observer
-export default class Sort extends React.Component {
-    state = {
-        sort: false
-    };
-    sortHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
-        this.setState({ sort: !this.state.sort })
-        // store.sortTickets(event.currentTarget.value)
+const Sort = observer(() => {
+    const [sort, setSort] = React.useState<boolean>(false);
+    const { ticketsStore } = useStore();
+
+    const sortHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setSort(!sort)
+        ticketsStore.sortTickets(event.currentTarget.value)
     }
-    render() {
-        const { sort } = this.state;
-        return (
-            <SortButtonsWrapper>
-                <SortButtonOne 
-                    value='0'
-                    sort={sort}
-                    disabled={!sort}
-                    onClick={this.sortHandler}
-                >Cheapest</SortButtonOne>
-                <SortButtonTwo
-                    value='1'
-                    sort={sort}
-                    disabled={sort}
-                    onClick={this.sortHandler}
-                >Quickest</SortButtonTwo>
-            </SortButtonsWrapper>
-        )
-    }
-}
+    return (
+        <SortButtonsWrapper>
+            <SortButtonOne
+                value='0'
+                sort={sort}
+                disabled={!sort}
+                onClick={sortHandler}
+            >Cheapest</SortButtonOne>
+            <SortButtonTwo
+                value='1'
+                sort={sort}
+                disabled={sort}
+                onClick={sortHandler}
+            >Quickest</SortButtonTwo>
+        </SortButtonsWrapper>
+    )
+})
+
+export default Sort;

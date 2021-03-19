@@ -1,6 +1,16 @@
 import React from 'react'
-import TicketsStore from './tickets';
+import Tickets from "./tickets";
 
-export const storesContext = React.createContext({
-    tickets: new TicketsStore(),
-})
+export type IStore = {
+    ticketsStore: Tickets
+}
+
+export const store: IStore = {
+    ticketsStore: new Tickets(),
+};
+
+export const StoreContext = React.createContext(store);
+
+export const useStore = () => {
+    return React.useContext(StoreContext);
+};

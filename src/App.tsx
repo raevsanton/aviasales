@@ -2,40 +2,39 @@ import React from 'react';
 import logo from "./assets/images/logo.svg";
 import Sort from './components/Sort/Sort';
 import Ticket from './components/Ticket/Ticket';
-import store from './store/tickets';
 import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
-import Filter from './components/Filter/Filter';
 import {observer} from "mobx-react-lite";
+import {useStore} from "./store";
+import {TicketDestruct} from "./types";
 
+const App = observer(() => {
+    const { ticketsStore } = useStore();
 
-class App extends React.Component {
-  componentDidMount() {
-    // store.setTickets()
-  }
-  render() {
-    // if(store.error) {
-    //   return (
-    //     <Error>An error has occurred. Refresh the page.</Error>
-    //   )
-    // }
+    React.useEffect(() => {
+        ticketsStore.setTickets();
+    }, [])
+
+    if(ticketsStore.error) {
+        return (
+          <Error>An error has occurred. Refresh the page.</Error>
+        )
+    }
     return (
-      <>
-        {/*<Logo src={logo} alt="logo" />*/}
-        {/*<Container>*/}
-        {/*  <Filter />*/}
-        {/*  <Wrapper>*/}
-        {/*    <Sort />*/}
-        {/*    {store.isFetching ? <Preloader/> : store.setTicket.map((ticket: Ticket, index: number) => (*/}
-        {/*      <Ticket*/}
-        {/*        key={index}*/}
-        {/*        ticket={ticket}*/}
-        {/*      />*/}
-        {/*    ))}*/}
-        {/*  </Wrapper>*/}
-        {/*</Container>*/}
-      </>
+        <>
+          <Logo src={logo} alt="logo" />
+          <Container>
+            <Wrapper>
+              <Sort />
+              {ticketsStore.isFetching
+                  ? <Preloader/>
+                  : ticketsStore.ticketsData.map((ticket: TicketDestruct, index: number) => (
+                        <Ticket key={index} {...ticket}/>
+                    ))
+              }
+            </Wrapper>
+          </Container>
+        </>
     )
-  }
-}
+})
 
 export default App;
