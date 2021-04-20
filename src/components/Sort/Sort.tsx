@@ -5,9 +5,9 @@ import {
     SortButtonsWrapper,
     SortButtonTwo
 } from "./styles";
-import {useStore} from "../../store";
+import { useStore } from "../../store";
 
-const Sort = observer(() => {
+const Sort = () => {
     const [sort, setSort] = React.useState<boolean>(false);
     const { ticketsStore } = useStore();
 
@@ -31,6 +31,6 @@ const Sort = observer(() => {
             >Quickest</SortButtonTwo>
         </SortButtonsWrapper>
     )
-})
+}
 
-export default Sort;
+export default observer(Sort);

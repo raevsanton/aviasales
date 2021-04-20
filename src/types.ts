@@ -1,15 +1,15 @@
-export type Ticket = {
+export interface Ticket {
     price: number
     carrier: string
     segments: [
-        { 
+        {
             origin: string
             destination: string
             date: Date
             stops: string[]
             duration: number
         },
-        { 
+        {
             origin: string
             destination: string
             date: Date
@@ -19,7 +19,7 @@ export type Ticket = {
     ]
 }
 
-export type TicketDestruct = {
+export interface TicketDestruct {
     price: number
     carrier: string
     originFrom: string

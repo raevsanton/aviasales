@@ -1,16 +1,29 @@
-import { makeAutoObservable } from "mobx"
+import {action, makeObservable, observable, runInAction, toJS} from "mobx"
 import { Ticket, TicketDestruct } from "../types";
 
 export default class Tickets {
     ticketsData: Array<TicketDestruct> = [];
     error: boolean = false;
     isFetching: boolean = true;
+    countOfStops: any = new Set();
 
     constructor() {
-        makeAutoObservable(this)
+        makeObservable(this, {
+            ticketsData: observable,
+            error: observable,
+            isFetching: observable,
+            countOfStops: observable,
+            setTickets: action,
+            sortTickets: action
+        });
     }
 
-    setTickets = async() => {
+    // {3, 0, 1, 2}
+    // [0, 1, 2, 3]
+    // ['All' , 'Non-stop', '1 stop', '2 stop', '3 stop']
+
+
+    setTickets = async(): Promise<void> => {
         try {
             const responseId = await fetch('https://front-test.beta.aviasales.ru/search');
             const dataId = await responseId.json();
@@ -33,17 +46,22 @@ export default class Tickets {
                         stopsTo: ticket.segments[1].stops,
                         durationTo: ticket.segments[1].duration
                     };
+                    // this.countOfStops.add(object.stopsFrom.length);
+                    // this.countOfStops.add(object.stopsTo.length);
                     return object;
                 })
-                .sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) => ticketOne.price - ticketTwo.price);
-            this.isFetching = false;
+                .sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) => ticketOne.price - ticketTwo.price)
+                toJS(this.ticketsData)
+            runInAction(() => {
+                this.isFetching = false;
+            })
         } catch(err) {
             this.error = true;
         }
     }
 
-    sortTickets = (event: string) => {
-        switch(event) {
+    sortTickets = (value: string) => {
+        switch(value) {
             case '0':
                 this.ticketsData = this.ticketsData.sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) =>
                     ticketOne.price - ticketTwo.price);

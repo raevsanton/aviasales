@@ -3,16 +3,17 @@ import logo from "./assets/images/logo.svg";
 import Sort from './components/Sort/Sort';
 import Ticket from './components/Ticket/Ticket';
 import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
-import {observer} from "mobx-react-lite";
-import {useStore} from "./store";
-import {TicketDestruct} from "./types";
+import { observer } from "mobx-react-lite";
+import { useStore } from "./store";
+import { TicketDestruct } from "./types";
+import Filter from "./components/Filter/Filter";
 
-const App = observer(() => {
+const App = () => {
     const { ticketsStore } = useStore();
 
     React.useEffect(() => {
         ticketsStore.setTickets();
-    }, [])
+    }, [ticketsStore])
 
     if(ticketsStore.error) {
         return (
@@ -23,6 +24,7 @@ const App = observer(() => {
         <>
           <Logo src={logo} alt="logo" />
           <Container>
+            <Filter/>
             <Wrapper>
               <Sort />
               {ticketsStore.isFetching
@@ -35,6 +37,6 @@ const App = observer(() => {
           </Container>
         </>
     )
-})
+}
 
-export default App;
+export default observer(App);

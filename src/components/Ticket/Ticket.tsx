@@ -12,7 +12,7 @@ import {
     TextGray,
     WrapperStops
 } from "./styles";
-import {TicketDestruct} from "../../types";
+import { TicketDestruct } from "../../types";
 
 const Ticket: React.FC<TicketDestruct> = ({
     price,
@@ -45,6 +45,20 @@ const Ticket: React.FC<TicketDestruct> = ({
     if (stopsTo.length === 1) {
         countStopsTo = '1 stop';
     }
+    const stopsFromView = stopsFrom.length === 0
+        ? 'Non-Stop'
+        : stopsFrom.map((stop: string, index: number) => (
+            <EndTime key={index}>
+                {`${stop}${stopsFrom[index + 1] ? ', ' : ''}`}
+            </EndTime>
+        ))
+    const stopsToView = stopsTo.length === 0
+        ? 'Non-Stop'
+        : stopsTo.map((stop: string, index: number) => (
+            <EndTime key={index}>
+                {`${stop}${stopsTo[index + 1] ? ', ' : ''}`}
+            </EndTime>
+        ))
     //Duration
     const durationResult = (time: number) => {
         const hours = (time / 60);
@@ -121,28 +135,12 @@ const Ticket: React.FC<TicketDestruct> = ({
                     <TextGray>{countStopsFrom}</TextGray>
                 </TicketWrapper>
                 <TicketWrapper>
-                    <WrapperStops>
-                        {stopsFrom.length === 0
-                            ? 'Non-Stop'
-                            : stopsFrom.map((stop: string, index: number) => (
-                                <EndTime key={index}>
-                                    {`${stop}${stopsFrom[index + 1] ? ', ' : ''}`}
-                                </EndTime>
-                        ))}
-                    </WrapperStops>
+                    <WrapperStops>{stopsFromView}</WrapperStops>
                 </TicketWrapper>
                 <TicketWrapper>
                     <TextGray>{countStopsTo}</TextGray>
                 </TicketWrapper>
-                <TicketWrapper>
-                    {stopsTo.length === 0
-                        ? 'Non-Stop'
-                        : stopsTo.map((stop: string, index: number) => (
-                        <EndTime key={index}>
-                            {`${stop}${stopsTo[index + 1] ? ', ' : ''}`}
-                        </EndTime>
-                    ))}
-                </TicketWrapper>
+                <TicketWrapper>{stopsToView}</TicketWrapper>
             </TicketColumn>
         </TicketStyle>
     )
