@@ -1,40 +1,43 @@
 import React from 'react';
-import logo from "./assets/images/logo.svg";
-import Sort from './components/Sort/Sort';
-import Ticket from './components/Ticket/Ticket';
-import { Container, Logo, Preloader, Wrapper, Error } from "./styles";
-import {observer} from "mobx-react-lite";
-import {useStore} from "./store";
-import {TicketDestruct} from "./types";
+import logo from './assets/images/logo.svg';
+import { Sort } from './components/Sort';
+import { Ticket } from './components/Ticket/';
+import { Container, Logo, Preloader, Wrapper, Error } from './styles';
+import { observer } from 'mobx-react-lite';
+import { useStore } from './store';
+import { TicketFormat } from './components/Ticket/types';
 
-const App = observer(() => {
-    const { ticketsStore } = useStore();
+export const App = observer(() => {
+  const {
+    ticketsStore: {
+      fetchTickets,
+      error,
+      loading,
+      fiveTickets,
+    },
+  } = useStore();
 
-    React.useEffect(() => {
-        ticketsStore.setTickets();
-    }, [])
+  React.useEffect(() => {
+    fetchTickets();
+  }, []);
 
-    if(ticketsStore.error) {
-        return (
-          <Error>An error has occurred. Refresh the page.</Error>
-        )
-    }
-    return (
-        <>
-          <Logo src={logo} alt="logo" />
-          <Container>
-            <Wrapper>
-              <Sort />
-              {ticketsStore.isFetching
-                  ? <Preloader/>
-                  : ticketsStore.ticketsData.map((ticket: TicketDestruct, index: number) => (
-                        <Ticket key={index} {...ticket}/>
-                    ))
-              }
-            </Wrapper>
-          </Container>
-        </>
-    )
-})
+  if (error) {
+    return <Error>An error has occurred. Refresh the page.</Error>
+  }
 
-export default App;
+  return (
+    <>
+      <Logo src={logo} alt="logo" />
+      <Container>
+        <Wrapper>
+          <Sort />
+          {loading
+            ? <Preloader />
+            : fiveTickets.map((ticket: TicketFormat, index: number) =>
+                <Ticket key={index} {...ticket} />
+              )}
+        </Wrapper>
+      </Container>
+    </>
+  );
+});
