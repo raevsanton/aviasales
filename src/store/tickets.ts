@@ -1,75 +1,106 @@
-import {action, makeObservable, observable, runInAction, toJS} from "mobx"
-import { Ticket, TicketDestruct } from "../types";
+import { action, computed, observable, makeObservable, runInAction } from 'mobx';
+import { TicketResponse, TicketFormat } from '../components/Ticket/types';
+import { sortByDuration, sortByPrice } from '../utils/sorts';
+import { SortValue } from './types';
 
 export default class Tickets {
-    ticketsData: Array<TicketDestruct> = [];
-    error: boolean = false;
-    isFetching: boolean = true;
-    countOfStops: any = new Set();
+  tickets: TicketFormat[] = [];
+  searchID: string | null = null;
+  error: boolean = false;
+  loading: boolean = false;
+  offsetCount: number = 1;
+  sortedBy: SortValue = 'cheapest';
 
-    constructor() {
-        makeObservable(this, {
-            ticketsData: observable,
-            error: observable,
-            isFetching: observable,
-            countOfStops: observable,
-            setTickets: action,
-            sortTickets: action
-        });
+  constructor() {
+    makeObservable(this, {
+      tickets: observable,
+      searchID: observable,
+      error: observable,
+      loading: observable,
+      offsetCount: observable,
+      sortedBy: observable,
+      fetchTickets: action,
+      fiveTickets: computed,
+      sortedTickets: computed,
+    });
+  }
+
+  get fiveTickets() {
+    return this.sortedTickets;
+  }
+
+  get sortedTickets() {
+    switch (this.sortedBy) {
+      case 'cheapest': return sortByPrice(this.tickets);
+      case 'fastest': return sortByDuration(this.tickets);
+      default: return sortByPrice(this.tickets);
+    }
+  }
+
+  sortBy = (sortValue: SortValue) => {
+    this.sortedBy = sortValue;
+  }
+
+
+  getID = async () => {
+    try {
+      const responseID = await fetch('https://aviasales-test-api.kata.academy/search');
+      const { searchId } = await responseID.json();
+      this.searchID = searchId;
+    } catch {
+      runInAction(() => {
+        this.error = true;
+      });
+    }
+  };
+
+  fetchTickets = async () => {
+    runInAction(() => {
+      this.loading = true;
+    });
+
+    if (!this.searchID) {
+      await this.getID();
     }
 
-    // {3, 0, 1, 2}
-    // [0, 1, 2, 3]
-    // ['All' , 'Non-stop', '1 stop', '2 stop', '3 stop']
+    try {
+      const responseTickets = await fetch(`https://aviasales-test-api.kata.academy/tickets?searchId=${this.searchID}`);
+      const { tickets } = await responseTickets.json();
+
+      runInAction(() => {
+        this.tickets = [...this.tickets, ...tickets
+          .map(({ price, carrier, segments }: TicketResponse) => {
+            const formatTicket: TicketFormat = {
+              price,
+              carrier,
+              originFrom: segments[0].origin,
+              originTo: segments[1].origin,
+              destinationFrom: segments[0].destination,
+              destinationTo: segments[1].destination,
+              dateOriginFrom: segments[0].date,
+              dateOriginTo: segments[1].date,
+              stopsFrom: segments[0].stops,
+              stopsTo: segments[1].stops,
+              durationFrom: segments[0].duration,
+              durationTo: segments[1].duration,
+              dateDestinationFrom: new Date(new Date(segments[0].date).setMinutes(new Date(segments[0].date).getMinutes() + segments[0].duration)),
+              dateDestinationTo: new Date(new Date(segments[1].date).setMinutes(new Date(segments[1].date).getMinutes() + segments[1].duration)),
+            };
+            return formatTicket;
+          })
+          .slice(0, this.offsetCount * 5)
+        ]
+      })
 
 
-    setTickets = async(): Promise<void> => {
-        try {
-            const responseId = await fetch('https://front-test.beta.aviasales.ru/search');
-            const dataId = await responseId.json();
-            const responseTickets = await fetch(`https://front-test.beta.aviasales.ru/tickets?searchId=${dataId.searchId}`);
-            const dataTickets = await responseTickets.json();
-            this.ticketsData = dataTickets.tickets
-                .slice(0, 5)
-                .map((ticket: Ticket) => {
-                    const object: TicketDestruct = {
-                        price: ticket.price,
-                        carrier: ticket.carrier,
-                        originFrom: ticket.segments[0].origin,
-                        destinationFrom: ticket.segments[0].destination,
-                        dateFrom: ticket.segments[0].date,
-                        stopsFrom: ticket.segments[0].stops,
-                        durationFrom: ticket.segments[0].duration,
-                        originTo: ticket.segments[1].origin,
-                        destinationTo: ticket.segments[1].destination,
-                        dateTo: ticket.segments[1].date,
-                        stopsTo: ticket.segments[1].stops,
-                        durationTo: ticket.segments[1].duration
-                    };
-                    // this.countOfStops.add(object.stopsFrom.length);
-                    // this.countOfStops.add(object.stopsTo.length);
-                    return object;
-                })
-                .sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) => ticketOne.price - ticketTwo.price)
-                toJS(this.ticketsData)
-            runInAction(() => {
-                this.isFetching = false;
-            })
-        } catch(err) {
-            this.error = true;
-        }
+    } catch {
+      runInAction(() => {
+        this.error = true;
+      });
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
     }
-
-    sortTickets = (value: string) => {
-        switch(value) {
-            case '0':
-                this.ticketsData = this.ticketsData.sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) =>
-                    ticketOne.price - ticketTwo.price);
-                break;
-            case '1':
-                this.ticketsData = this.ticketsData.sort((ticketOne: TicketDestruct, ticketTwo: TicketDestruct) =>
-                    (ticketOne.durationFrom + ticketOne.durationTo) - (ticketTwo.durationFrom + ticketTwo.durationTo));
-                break;
-        }
-    }
+  };
 }
